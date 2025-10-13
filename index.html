@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galería</title>
+  <link rel="icon" href="resources/favicon.ico" type="image/x-icon">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f5;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
+      --border-color: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --input-bg: #ffffff;
+      --preview-bg: #f9fafb;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --input-bg: #0f172a;
+      --preview-bg: #0f172a;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px 25px;
+      background-color: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .theme-toggle {
+      padding: 10px 16px;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.05);
+      background-color: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .gallery-btn {
+      padding: 12px 24px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .gallery-btn:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px var(--shadow);
+      margin-bottom: 40px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-secondary);
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .preview {
+      margin-top: 15px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: var(--preview-bg);
+      border: 2px dashed var(--border-color);
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview img,
+    .preview video {
+      max-width: 100%;
+      max-height: 300px;
+      display: none;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 20px;
+      margin-right: 10px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .primary {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .primary:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .secondary {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .secondary:hover {
+      background-color: var(--border-color);
+      transform: translateY(-2px);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .product {
+      background-color: var(--bg-card);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px var(--shadow);
+      border-color: var(--accent);
+    }
+
+    .product h3 {
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      color: var(--text-primary);
+    }
+
+    .product img,
+    .product video {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+    }
+
+    .product video {
+      height: 250px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .edit,
+    .delete {
+      flex: 1;
+      padding: 10px;
+      margin: 0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .edit {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .edit:hover {
+      background-color: #059669;
+    }
+
+    .delete {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .delete:hover {
+      background-color: #dc2626;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .list {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎨 Gestión de Galería</h1>
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
+          🌙
+        </button>
+        <a href="https://video-gallery-umber.vercel.app/">
+        <button class="gallery-btn">
+          🖼️ Ver Galería
+        </button>
+        </a>
+      </div>
+    </div>
+
+    <form id="productForm" enctype="multipart/form-data" class="card">
+      <input type="hidden" id="productId" />
+
+      <label>Nombre</label>
+      <input type="text" id="name" placeholder="Ej: Gato feliz" required />
+
+      <label>Imagen</label>
+      <input type="file" id="image" accept="image/*" />
+      <div class="preview">
+        <img id="imagePreview" alt="Vista previa de imagen" />
+      </div>
+
+      <label>Video</label>
+      <input type="file" id="video" accept="video/*" />
+      <div class="preview">
+        <video id="videoPreview" controls></video>
+      </div>
+
+      <button type="submit" class="primary">💾 Guardar</button>
+      <button type="button" id="cancelEdit" class="secondary hidden">❌ Cancelar edición</button>
+    </form>
+
+    <div id="productsList" class="list"></div>
+  </div>
+
+  <script>
+    const API_URL = "http://ec2-18-118-78-238.us-east-2.compute.amazonaws.com:4000/api/products";
+
+    const form = document.getElementById("productForm");
+    const list = document.getElementById("productsList");
+    const nameInput = document.getElementById("name");
+    const imageInput = document.getElementById("image");
+    const videoInput = document.getElementById("video");
+    const imagePreview = document.getElementById("imagePreview");
+    const videoPreview = document.getElementById("videoPreview");
+    const productIdInput = document.getElementById("productId");
+    const cancelEditBtn = document.getElementById("cancelEdit");
+    const themeToggle = document.getElementById("themeToggle");
+
+    // Guardar preferencia de tema en localStorage
+    function saveThemePreference(theme) {
+      localStorage.setItem('theme', theme);
+    }
+
+    function getThemePreference() {
+      return localStorage.getItem('theme') || 'light';
+    }
+
+    // Inicializar tema desde localStorage
+    const savedTheme = getThemePreference();
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeToggle.textContent = '☀️';
+    }
+
+    // Toggle de tema
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      
+      saveThemePreference(newTheme);
+    });
+
+    // Cargar lista al iniciar
+    document.addEventListener("DOMContentLoaded", loadProducts);
+
+    // Preview de imagen
+    imageInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        imagePreview.src = URL.createObjectURL(file);
+        imagePreview.style.display = "block";
+      } else {
+        imagePreview.style.display = "none";
+      }
+    });
+
+    // Preview de video
+    videoInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        videoPreview.src = URL.createObjectURL(file);
+        videoPreview.style.display = "block";
+      } else {
+        videoPreview.style.display = "none";
+      }
+    });
+
+    // Leer productos
+    async function loadProducts() {
+      const res = await fetch(API_URL);
+      const products = await res.json();
+
+      list.innerHTML = "";
+
+      products.forEach((p) => {
+        const div = document.createElement("div");
+        div.classList.add("product");
+        div.innerHTML = `
+          <h3>${p.name}</h3>
+          <img src="${p.image_url}" alt="${p.name}" />
+          ${p.video_url ? `<video src="${p.video_url}" controls></video>` : ""}
+          <div class="actions">
+            <button class="edit" onclick="editProduct(${p.id})">✏️ Editar</button>
+            <button class="delete" onclick="deleteProduct(${p.id})">🗑️ Eliminar</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // Crear o actualizar producto
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const id = productIdInput.value;
+      const formData = new FormData();
+      formData.append("name", nameInput.value);
+      if (imageInput.files[0]) formData.append("image", imageInput.files[0]);
+      if (videoInput.files[0]) formData.append("video", videoInput.files[0]);
+
+      const method = id ? "PUT" : "POST";
+      const url = id ? `${API_URL}/${id}` : API_URL;
+
+      await fetch(url, { method, body: formData });
+
+      resetForm();
+      loadProducts();
+    });
+
+    // Eliminar producto
+    async function deleteProduct(id) {
+      if (!confirm("¿Eliminar producto?")) return;
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      loadProducts();
+    }
+
+    // Editar producto
+    async function editProduct(id) {
+      const res = await fetch(`${API_URL}/${id}`);
+      const product = await res.json();
+
+      productIdInput.value = product.id;
+      nameInput.value = product.name;
+      imagePreview.src = product.image_url;
+      imagePreview.style.display = "block";
+      if (product.video_url) {
+        videoPreview.src = product.video_url;
+        videoPreview.style.display = "block";
+      } else {
+        videoPreview.style.display = "none";
+      }
+
+      cancelEditBtn.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Cancelar edición
+    cancelEditBtn.addEventListener("click", resetForm);
+
+    function resetForm() {
+      form.reset();
+      productIdInput.value = "";
+      imagePreview.src = "";
+      imagePreview.style.display = "none";
+      videoPreview.src = "";
+      videoPreview.style.display = "none";
+      cancelEditBtn.classList.add("hidden");
+    }
+  </script>
+</body>
+</html>
